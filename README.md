@@ -1,0 +1,1 @@
+Denna fil ska innehålla hur lösningen ska kompileras och körs, inklusive en bild. 
