@@ -9,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 
 import static java.lang.Integer.parseInt;
 
@@ -18,11 +17,12 @@ public class APIRetriever {
     public APIRetriever(){}
 
     public void getAPI(){
-        NodeList xmlDoc = getXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
+        NodeList xmlDoc = parseXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
         getChannels(xmlDoc);
+
     }
 
-    public NodeList getXML(String stringUrl, String tagName){
+    public NodeList parseXML(String stringUrl, String tagName){
         NodeList xml = null;
 
         try {
@@ -47,6 +47,9 @@ public class APIRetriever {
     }
 
     public void getChannels(NodeList xml){
+
+        TimeHolder timeHolder = new TimeHolder();
+
         for(int i = 0; i < xml.getLength(); i++){
             Channel channel = new Channel();
             Node node = xml.item(i);
@@ -56,13 +59,13 @@ public class APIRetriever {
                 channel.setId(parseInt(eChannel.getAttribute("id")));
                 channel.setName(eChannel.getAttribute("name"));
                 channel.setImage(eChannel.getElementsByTagName("image").item(0).getTextContent());
-                getPrograms(channel.getId().toString());
+                getPrograms(channel.getId().toString(), timeHolder);
             }
         }
     }
 
-    public void getPrograms(String channelId){
-        NodeList xmlPrograms = getXML("http://api.sr.se/v2/scheduledepisodes?channelid=" + channelId + "&date=2017-11-17&pagination=false", "scheduledepisode");
+    public void getPrograms(String channelId, TimeHolder timeHolder){
+        NodeList xmlPrograms = parseXML("http://api.sr.se/v2/scheduledepisodes?channelid=" + channelId + "&fromdate=" + timeHolder.getStartDateString() + "&todate=" + timeHolder.getEndDateString() + "&pagination=false", "scheduledepisode");
 
         for(int i = 0; i < xmlPrograms.getLength(); i++){
             Program program = new Program();
@@ -72,19 +75,23 @@ public class APIRetriever {
                 Element eProgram = (Element) node;
 
                 //Ska kolla om det givna programmet är inom tidsramen för de program som ska visas.
-                if(true){
-
+                if(belongsToSchedule(eProgram.getElementsByTagName("starttimeutc").item(0).getTextContent(), timeHolder)){
+                    System.out.println(eProgram.getElementsByTagName("starttimeutc").item(0).getTextContent());
                 }
-                program.setTitle(eProgram.getElementsByTagName("title").item(0).getTextContent());
 
+                program.setTitle(eProgram.getElementsByTagName("title").item(0).getTextContent());
             }
         }
+
+        System.out.println("\n\n");
     }
 
-    public boolean inCurrentSchedule(){
-
-        Date currentDate = new Date();
-
-        return false;
+    public boolean belongsToSchedule(String startTime, TimeHolder timeHolder){
+        if(!timeHolder.isBeforeScheduleStart(startTime) &&
+                !timeHolder.isAfterScheduleEnd(startTime)){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
