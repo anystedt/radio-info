@@ -1,9 +1,13 @@
+package Model;
+
+import java.util.List;
+
 public class Channel {
 
     private Integer id;
     private String name;
     private String imageUrl;
-    private String scheduleUrl;
+    private List<Program> tableau;
 
     public Channel(){}
 
@@ -15,7 +19,9 @@ public class Channel {
 
     public void setImage(String imageUrl){this.imageUrl = imageUrl;}
 
+    public void setTableau(List<Program> tableau){ this.tableau = tableau;}
+
     public String toString(){
-        return id+" "+name+" "+imageUrl;
+        return id + "   " + tableau.toString();
     }
 }
