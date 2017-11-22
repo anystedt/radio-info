@@ -39,8 +39,8 @@ public class APIRetrieverTest {
     @Test
     public void shouldReturnFalseBeforeSchedule(){
         assertFalse(apiRetriever.belongsToSchedule(
-                LocalDateTime.now().minusHours(13).toString()+"Z"
-                , timeHolder));
+                LocalDateTime.now().minusHours(13).toString()+"Z",
+                timeHolder));
     }
 
     /**
@@ -50,8 +50,8 @@ public class APIRetrieverTest {
     @Test
     public void shouldReturnFalseAfterSchedule(){
         assertFalse(apiRetriever.belongsToSchedule(
-                LocalDateTime.now().plusHours(13).toString()+"Z"
-                , timeHolder));
+                LocalDateTime.now().plusHours(13).toString()+"Z",
+                timeHolder));
     }
 
 }

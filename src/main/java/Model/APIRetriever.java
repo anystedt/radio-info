@@ -17,12 +17,9 @@ import static java.lang.Integer.parseInt;
 
 public class APIRetriever {
 
-    public APIRetriever(){}
+    private List<Channel> listOfChannels;
 
-    public void getAPI(){
-        NodeList xmlDoc = parseXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
-        getChannels(xmlDoc);
-    }
+    public APIRetriever(){}
 
     public NodeList parseXML(String stringUrl, String tagName){
         NodeList xml = null;
@@ -48,7 +45,10 @@ public class APIRetriever {
         return xml;
     }
 
-    public void getChannels(NodeList xml){
+    public List<Channel> getChannels(){
+
+        NodeList xml = parseXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
+        listOfChannels = new ArrayList<>();
 
         //Create a timeholder that holds the current time and the
         //limits for the tableaux.
@@ -67,8 +67,11 @@ public class APIRetriever {
                 channel.setName(eChannel.getAttribute("name"));
                 channel.setImage(getTag(eChannel, "image"));
                 channel.setTableau(parseTableau(channel.getId().toString(), timeHolder));
+                listOfChannels.add(channel);
             }
         }
+
+        return listOfChannels;
     }
 
     public String getTag(Element element, String tagName){
@@ -126,7 +129,7 @@ public class APIRetriever {
         program.setImageUrl(getTag(eProgram, "imageurl"));
         program.setStart(getTag(eProgram, "starttimeutc"));
         program.setEnd(getTag(eProgram, "endtimeutc"));
-        
+
         return program;
     }
 }

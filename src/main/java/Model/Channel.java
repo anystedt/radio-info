@@ -17,11 +17,13 @@ public class Channel {
 
     public void setName(String name){this.name = name;}
 
+    public String getName(){return name;}
+
     public void setImage(String imageUrl){this.imageUrl = imageUrl;}
 
     public void setTableau(List<Program> tableau){ this.tableau = tableau;}
 
     public String toString(){
-        return id + "   " + tableau.toString();
+        return id + " " + name + "\n";
     }
 }

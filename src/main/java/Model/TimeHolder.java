@@ -35,5 +35,4 @@ public class TimeHolder {
 
         return programEnd.isAfter(tableauEnd);
     }
-
 }
