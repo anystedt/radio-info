@@ -19,7 +19,9 @@ public class Channel {
 
     public String getName(){return name;}
 
-    public void setImage(String imageUrl){this.imageUrl = imageUrl;}
+    public void setImageUrl(String imageUrl){this.imageUrl = imageUrl;}
+
+    public String getImageUrl(){ return imageUrl;}
 
     public void setTableau(List<Program> tableau){ this.tableau = tableau;}
 

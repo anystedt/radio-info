@@ -30,7 +30,6 @@ public class RadioController {
             @Override
             protected List<Channel> doInBackground() {
 
-                System.out.println(new Date());
                 return model.getChannels();
             }
 
@@ -38,6 +37,8 @@ public class RadioController {
             protected void done() {
                 try {
                     List<Channel> listOfChannels = get();
+
+                    view.setChannels(listOfChannels);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -57,7 +58,7 @@ public class RadioController {
             }
         }, 0, 3600 * 1000);
 
-        //Gives the update button an listener that will execute the
+        //Gives the update button a listener that will execute the
         //methods of the inner class when pressed.
         view.setUpdateListener(e -> new worker().execute());
     }

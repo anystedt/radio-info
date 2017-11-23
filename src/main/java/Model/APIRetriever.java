@@ -65,7 +65,7 @@ public class APIRetriever {
 
                 channel.setId(parseInt(eChannel.getAttribute("id")));
                 channel.setName(eChannel.getAttribute("name"));
-                channel.setImage(getTag(eChannel, "image"));
+                channel.setImageUrl(getTag(eChannel, "image"));
                 channel.setTableau(parseTableau(channel.getId().toString(), timeHolder));
                 listOfChannels.add(channel);
             }
