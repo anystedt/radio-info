@@ -22,6 +22,8 @@ public class TimeHolder {
         return tableauEnd.toLocalDate().toString();
     }
 
+    public LocalDateTime getCurrentTime(){ return currentTime;}
+
     public boolean isBeforeTableauStart(String startTime){
         startTime = startTime.substring(0, startTime.length() - 1);
         LocalDateTime programStart = LocalDateTime.parse(startTime);

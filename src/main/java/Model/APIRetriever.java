@@ -99,7 +99,7 @@ public class APIRetriever {
                 //If the given program starts within the limits of
                 //the tableau, add it to the list of programs
                 if(belongsToSchedule(getTag(eProgram, "starttimeutc"), timeHolder)){
-                    Program program = getProgramInfo(eProgram);
+                    Program program = getProgramInfo(eProgram, timeHolder);
                     channelTableau.add(program);
                 }
             }
@@ -120,7 +120,7 @@ public class APIRetriever {
                 !timeHolder.isAfterTableauEnd(startTime);
     }
 
-    public Program getProgramInfo(Element eProgram){
+    public Program getProgramInfo(Element eProgram, TimeHolder timeHolder){
         Program program = new Program();
 
         program.setTitle(getTag(eProgram, "title"));
@@ -129,6 +129,12 @@ public class APIRetriever {
         program.setImageUrl(getTag(eProgram, "imageurl"));
         program.setStart(getTag(eProgram, "starttimeutc"));
         program.setEnd(getTag(eProgram, "endtimeutc"));
+
+        if(program.getEnd().isBefore(timeHolder.getCurrentTime())){
+            program.setHasBeenSent(true);
+        } else{
+            program.setHasBeenSent(false);
+        }
 
         return program;
     }

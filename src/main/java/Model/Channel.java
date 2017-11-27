@@ -23,7 +23,9 @@ public class Channel {
 
     public String getImageUrl(){ return imageUrl;}
 
-    public void setTableau(List<Program> tableau){ this.tableau = tableau;}
+    public void setTableau(List<Program> tableau){this.tableau = tableau;}
+
+    public List getTableau(){return tableau;}
 
     public String toString(){
         return id + " " + name + "\n";

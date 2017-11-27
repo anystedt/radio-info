@@ -4,7 +4,7 @@ import Model.Channel;
 import View.RadioView;
 
 import javax.swing.*;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.Timer;
@@ -23,22 +23,33 @@ public class RadioController {
 
     private void updateView() {
 
-        //Inner class that handles the additional thread that collects
-        // information from the SR-api.
-        class worker extends SwingWorker<List<Channel>, Void> {
+        /*Inner class that handles the additional thread that collects
+        * information from the SR-api and then forwards the result
+        * to the view.
+        */
+        class worker extends SwingWorker<List<JLabel>, Void> {
 
             @Override
-            protected List<Channel> doInBackground() {
+            protected List<JLabel> doInBackground() {
 
-                return model.getChannels();
+                List<Channel> listOfChannels = model.getChannels();
+                List<JLabel> channelLabels = new ArrayList<>();
+
+                for(Channel channel: listOfChannels){
+                    JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
+                    view.addListenerToLabel(channelLabel, channel);
+
+                    channelLabels.add(channelLabel);
+                }
+
+                return channelLabels;
             }
 
             @Override
             protected void done() {
                 try {
-                    List<Channel> listOfChannels = get();
-
-                    view.setChannels(listOfChannels);
+                    List<JLabel> channelLabels = get();
+                    view.setChannels(channelLabels);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
