@@ -1,6 +1,7 @@
 package Controller;
 import Model.APIRetriever;
 import Model.Channel;
+import Model.Program;
 import View.RadioView;
 
 import javax.swing.*;
@@ -37,8 +38,9 @@ public class RadioController {
 
                 for(Channel channel: listOfChannels){
                     JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
-                    view.addListenerToLabel(channelLabel, channel);
+                    List<Object[]> tableObjects = getTableau(channel);
 
+                    view.addListenerToLabel(channelLabel, tableObjects);
                     channelLabels.add(channelLabel);
                 }
 
@@ -72,5 +74,19 @@ public class RadioController {
         //Gives the update button a listener that will execute the
         //methods of the inner class when pressed.
         view.setUpdateListener(e -> new worker().execute());
+    }
+
+    private List<Object[]> getTableau(Channel channel){
+        List<Program> programs = channel.getTableau();
+        List<Object[]> tableObjects = new ArrayList<>();
+
+        for(Program program: programs){
+            Object[] programInfo = {program.getTitle(),
+                    program.getStart(),
+                    program.getEnd()};
+            tableObjects.add(programInfo);
+        }
+
+        return tableObjects;
     }
 }
