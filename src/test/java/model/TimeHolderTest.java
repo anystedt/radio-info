@@ -10,7 +10,7 @@
  * expected value. An instance of the class is used to do the
  * evaluation.
  */
-package Model;
+package model;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -10,7 +10,7 @@
  * program such as title, description, start time and end time.
  */
 
-package Model;
+package model;
 
 import java.time.LocalDateTime;
 

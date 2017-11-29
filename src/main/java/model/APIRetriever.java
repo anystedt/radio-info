@@ -12,7 +12,7 @@
  * these in a list.
  */
 
-package Model;
+package model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

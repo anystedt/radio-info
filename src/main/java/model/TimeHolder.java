@@ -10,7 +10,7 @@
  * current time, the start time and ending time of the tableau.
  */
 
-package Model;
+package model;
 
 import java.time.LocalDateTime;
 

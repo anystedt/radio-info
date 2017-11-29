@@ -1,4 +1,4 @@
-package View;
+package view;
 
 import javax.swing.*;
 import java.awt.*;
@@ -94,7 +94,7 @@ public class ChannelInfo extends JPanel {
                 tableau.addProgram(program);
             }
         } else {
-            Object[] program = {"Sändingsuppehåll"};
+            Object[] program = {"Pause of transmission"};
             tableau.addProgram(program);
         }
     }

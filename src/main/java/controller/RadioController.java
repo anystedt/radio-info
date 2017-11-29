@@ -13,11 +13,11 @@
  * forwards this to the view which presents it for the user.
  */
 
-package Controller;
-import Model.APIRetriever;
-import Model.Channel;
-import Model.Program;
-import View.RadioView;
+package controller;
+import model.APIRetriever;
+import model.Channel;
+import model.Program;
+import view.RadioView;
 
 import javax.swing.*;
 import java.util.ArrayList;

@@ -13,7 +13,7 @@
  * feedback.
  */
 
-package View;
+package view;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -45,7 +45,7 @@ public class RadioView {
         frame.setJMenuBar(new RadioMenu());
         frame.add(createChannelList(), BorderLayout.LINE_START);
 
-        updateButton = new JButton("Uppdatera");
+        updateButton = new JButton("Update");
         channelInfo = new ChannelInfo(updateButton);
         frame.add(channelInfo);
 

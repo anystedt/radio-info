@@ -1,6 +1,6 @@
-import Controller.RadioController;
-import Model.APIRetriever;
-import View.RadioView;
+import controller.RadioController;
+import model.APIRetriever;
+import view.RadioView;
 
 import javax.swing.*;
 
