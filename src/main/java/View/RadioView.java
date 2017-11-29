@@ -1,3 +1,18 @@
+/**
+ * Created on 22/11/17
+ * File: RadioView.java
+ *
+ * @author Anna Nystedt, id14ant
+ */
+
+/**
+ * Class representing the view. Creates the GUI for the application
+ * that handles the communication between the user and the program.
+ * Makes the information about channels and programs visible to the
+ * user and receives actions from the user and present appropriate
+ * feedback.
+ */
+
 package View;
 
 import javax.imageio.ImageIO;
@@ -9,7 +24,6 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
@@ -18,20 +32,20 @@ public class RadioView {
 
     private JButton updateButton;
     private JFrame frame;
-    private ChannelList channelList;
+    private JPanel channelList;
     private ChannelInfo channelInfo;
 
     public RadioView(){
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(600,80));
+        frame.setMinimumSize(new Dimension(650,80));
         frame.setPreferredSize(new Dimension(700, 500));
         frame.setLayout(new BorderLayout());
 
         frame.setJMenuBar(new RadioMenu());
         frame.add(createChannelList(), BorderLayout.LINE_START);
 
-        updateButton = new JButton("Update");
+        updateButton = new JButton("Uppdatera");
         channelInfo = new ChannelInfo(updateButton);
         frame.add(channelInfo);
 
@@ -39,17 +53,14 @@ public class RadioView {
     }
 
     public JScrollPane createChannelList(){
-        channelList = new ChannelList();
+        channelList = new JPanel();
+        channelList.setLayout(new GridLayout(0,1, 2, 5));
 
         JScrollPane scrollArea = new JScrollPane(channelList);
         scrollArea.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         scrollArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         return scrollArea;
-    }
-
-    public void setUpdateListener(ActionListener actionListener){
-        updateButton.addActionListener(actionListener);
     }
 
     public JLabel createChannelLabel(String name, String imageUrl){
@@ -82,30 +93,20 @@ public class RadioView {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return icon;
     }
 
-    public void addListenerToLabel(JLabel label, List<Object[]> listOfPrograms){
+    public void setUpdateListener(ActionListener actionListener){
+        updateButton.addActionListener(actionListener);
+    }
+
+    public void setChannelLabelListener(JLabel label, List<Object[]> listOfPrograms){
         label.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
                 channelInfo.changeHeaderContent(label);
-                addTableau(listOfPrograms);
+                channelInfo.addTable(listOfPrograms);
                 frame.validate();
-
             }
         });
-    }
-
-    public void addTableau(List<Object[]> listOfPrograms){
-        channelInfo.addTable();
-        if(listOfPrograms.size() != 0){
-            for(Object[] program: listOfPrograms){
-                channelInfo.addProgramToTable(program);
-            }
-        } else{
-            Object[] program = {"Sändningsuppehåll"};
-            channelInfo.addProgramToTable(program);
-        }
     }
 }

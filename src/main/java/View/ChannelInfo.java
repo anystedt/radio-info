@@ -2,6 +2,7 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 
@@ -80,18 +81,22 @@ public class ChannelInfo extends JPanel {
         return new ImageIcon(newImage);
     }
 
-    public void addTable(){
+    public void addTable(List<Object[]> listOfPrograms){
         removeTable();
 
         tableau = new Tableau();
         JScrollPane scrollArea = new JScrollPane(tableau);
         scrollArea.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-
         add(scrollArea);
-    }
 
-    public void addProgramToTable(Object[] program){
-        tableau.addProgram(program);
+        if(listOfPrograms.size() != 0){
+            for(Object[] program: listOfPrograms){
+                tableau.addProgram(program);
+            }
+        } else {
+            Object[] program = {"Sändingsuppehåll"};
+            tableau.addProgram(program);
+        }
     }
 
     private void removeTable(){

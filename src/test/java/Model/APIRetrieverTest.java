@@ -1,3 +1,16 @@
+/**
+ * Created on 17/11/17
+ * File: APIRetrieverTest.java
+ *
+ * @author Anna Nystedt, id14ant
+ */
+
+/**
+ * Tests if the testable methods in APIRetriever returns the expected
+ * value. Uses when needed the class TimeHolder to know the limits
+ * of the tableau.
+ */
+
 package Model;
 
 import org.junit.Before;
@@ -17,7 +30,7 @@ public class APIRetrieverTest {
         timeHolder = new TimeHolder();
     }
 
-    @Test(expected = MalformedURLException.class)
+    @Test(expected =  MalformedURLException.class)
     public void testMalformedURLException(){
         apiRetriever.parseXML("URL", "tagName");
     }
