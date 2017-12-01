@@ -17,9 +17,14 @@ package controller;
 import model.APIRetriever;
 import model.Channel;
 import model.Program;
+import org.xml.sax.SAXException;
 import view.RadioView;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
@@ -30,6 +35,7 @@ public class RadioController {
 
     private RadioView view;
     private APIRetriever model;
+    private Boolean isRetrievingChannels = false;
 
     /**
      * Constructor for the controller. Initializes the model and the
@@ -55,30 +61,45 @@ public class RadioController {
          * to the view.
          */
         class worker extends SwingWorker<List<JLabel>, Void> {
-
             /**
              * Retrieves the channel information from the model and
              * makes the data readable for the view. Prepares the
              * labels that will be used for presenting the channels
              * for the user, to prevent the GUI to froze.
+             *
              * @return a list of labels that will be presented by the
              * view.
              */
             @Override
             protected List<JLabel> doInBackground() {
 
-                List<Channel> listOfChannels = model.getChannels();
-                List<JLabel> channelLabels = new ArrayList<>();
+                isRetrievingChannels = true;
 
-                for(Channel channel: listOfChannels){
-                    JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
-                    List<Object[]> tableObjects = getTableau(channel);
+                try {
+                    List<Channel> listOfChannels = model.getChannels();
 
-                    view.setChannelLabelListener(channelLabel, tableObjects);
-                    channelLabels.add(channelLabel);
+                    List<JLabel> channelLabels = new ArrayList<>();
+
+                    for (Channel channel : listOfChannels) {
+                        JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
+                        List<Object[]> tableObjects = getTableau(channel);
+
+                        view.setViewListener(channelLabel, tableObjects, programListener);
+                        channelLabels.add(channelLabel);
+                    }
+
+                    isRetrievingChannels = false;
+
+                    return channelLabels;
+
+                } catch (ParserConfigurationException e) {
+                    view.showErrorMessage(e);
+                } catch (SAXException e) {
+                    view.showErrorMessage(e);
+                } catch (IOException e) {
+                    view.showErrorMessage(e);
                 }
-
-                return channelLabels;
+                return null;
             }
 
             /**
@@ -88,14 +109,27 @@ public class RadioController {
             protected void done() {
                 try {
                     List<JLabel> channelLabels = get();
-                    view.setChannels(channelLabels);
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    if(channelLabels != null){
+                        view.setChannels(channelLabels);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    view.showErrorMessage(e);
                 }
             }
+
+            private MouseAdapter programListener = new MouseAdapter(){
+                public void mousePressed(MouseEvent e) {
+                    JTable target = (JTable) e.getSource();
+                    int row = target.getSelectedRow();
+                    Program clickedProgram = (Program) target.getValueAt(row, 0);
+
+                    view.showProgramInfo(clickedProgram.getTitle(),
+                            clickedProgram.getSubtitle(),
+                            clickedProgram.getImageUrl(),
+                            clickedProgram.getDescription());
+                }
+            };
         }
 
         //Starts a timer that will execute the methods of the inner
@@ -104,13 +138,19 @@ public class RadioController {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                new worker().execute();
+                if (!isRetrievingChannels) {
+                    new worker().execute();
+                }
             }
         }, 0, 3600 * 1000);
 
         //Gives the update button a listener that will execute the
         //methods of the inner class when pressed.
-        view.setUpdateListener(e -> new worker().execute());
+        view.setUpdateListener(e -> {
+            if (!isRetrievingChannels) {
+                new worker().execute();
+            }
+        });
     }
 
     /**
@@ -124,12 +164,9 @@ public class RadioController {
         List<Object[]> tableObjects = new ArrayList<>();
 
         for(Program program: programs){
-            Object[] programInfo = {program.getTitle(),
+            Object[] programInfo = {program,
                     program.getStart(),
-                    program.getEnd(),
-                    program.getSubtitle(),
-                    program.getImageUrl(),
-                    program.getDescription()};
+                    program.getEnd(),};
             tableObjects.add(programInfo);
         }
 

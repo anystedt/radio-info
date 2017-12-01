@@ -1,3 +1,15 @@
+/**
+ * Created on 28/11/17
+ * File: Tableau.java
+ *
+ * @author Anna Nystedt, id14ant
+ */
+
+/**
+ * Class representing the tableau. Contains a table that stores all
+ * program for a channel.
+ */
+
 package view;
 
 import javax.swing.*;
@@ -6,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -17,19 +28,22 @@ public class Tableau extends JPanel {
     private final static int COL_TITLE = 0;
     private final static int COL_START = 1;
     private final static int COL_END = 2;
-    private final static int COL_SUBTITLE = 3;
-    private final static int COL_IMAGE = 4;
-    private final static int COL_DESCRIPTION = 5;
 
+    /**
+     * Constructor for the tableau. Creates the table and a table
+     * model.
+     */
     public Tableau(){
-
-        tableModel= new DefaultTableModel(0, 6);
+        tableModel= new DefaultTableModel(0, 3);
         initiateTable(tableModel);
         add(tableTableau);
-        hideColumns();
-        addRowListener();
     }
 
+    /**
+     * Initiates the table and the table model. Styles and color the
+     * table appropriate.
+     * @param tableModel the table model.
+     */
     private void initiateTable(DefaultTableModel tableModel){
         tableTableau = new JTable(tableModel){
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
@@ -52,6 +66,10 @@ public class Tableau extends JPanel {
                 colorProgram(c, start, end);
 
                 return c;
+            }
+
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
 
             private void styleTable(Component c){
@@ -85,9 +103,11 @@ public class Tableau extends JPanel {
         };
     }
 
+    /**
+     * Inner class representing the renderer for table cells. Style
+     * the cells for the given cells.
+     */
     public class DateTableCellRenderer extends DefaultTableCellRenderer {
-
-        public DateTableCellRenderer() {}
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -99,28 +119,20 @@ public class Tableau extends JPanel {
         }
     }
 
-    private void hideColumns(){
-        //Hide the part of table that should not be visible to the user.
-        tableTableau.removeColumn(tableTableau.getColumnModel().getColumn(COL_DESCRIPTION));
-        tableTableau.removeColumn(tableTableau.getColumnModel().getColumn(COL_IMAGE));
-        tableTableau.removeColumn(tableTableau.getColumnModel().getColumn(COL_SUBTITLE));
-    }
-
+    /**
+     * Adds a row to the table containing the information about the
+     * program.
+     * @param program the program that should be added to the table.
+     */
     public void addProgram(Object[] program){
            tableModel.addRow(program);
     }
 
-    private void addRowListener(){
-        tableTableau.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (tableTableau.getSelectedRow() > -1) {
-                    System.out.println(tableTableau.getValueAt(tableTableau.getSelectedRow(), 0).toString());
-                }
-            }
-        });
-    }
-
-    /*FRÅGOR
-    - Visa upp information om ett program
+    /**
+     * Adds a listener to the row so the additional information
+     * can be visible to the user.
      */
+    public void addRowListener(MouseAdapter programListener){
+        tableTableau.addMouseListener(programListener);
+    }
 }

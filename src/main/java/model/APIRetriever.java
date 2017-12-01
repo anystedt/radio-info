@@ -23,7 +23,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class APIRetriever {
      * information and the tableau for that channel has been extracted.
      * @return a list containing the channels.
      */
-    public List<Channel> getChannels(){
+    public List<Channel> getChannels() throws ParserConfigurationException, SAXException, IOException {
 
         NodeList xml = parseXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
         listOfChannels = new ArrayList<>();
@@ -77,26 +76,22 @@ public class APIRetriever {
      * @param tagName the name of the tag that should be retrieved.
      * @return a node list containing the extracted nodes.
      */
-    public NodeList parseXML(String stringUrl, String tagName){
-        NodeList xml = null;
-
-        try {
-            URL url = new URL(stringUrl);
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(url.openStream());
-            doc.getDocumentElement().normalize();
-            xml = doc.getElementsByTagName(tagName);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
+    /**
+     *
+     * @param stringUrl
+     * @param tagName
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    public NodeList parseXML(String stringUrl, String tagName) throws IOException, ParserConfigurationException, SAXException {
+        URL url = new URL(stringUrl);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(url.openStream());
+        doc.getDocumentElement().normalize();
+        NodeList xml = doc.getElementsByTagName(tagName);
 
         return xml;
     }
@@ -126,7 +121,7 @@ public class APIRetriever {
      *                   of the tableau
      * @return the list of programs.
      */
-    public List<Program> parseTableau(String channelId, TimeHolder timeHolder){
+    public List<Program> parseTableau(String channelId, TimeHolder timeHolder) throws ParserConfigurationException, SAXException, IOException {
         NodeList xmlPrograms = parseXML(getTableauUrl(channelId, timeHolder),
                 "scheduledepisode");
         List<Program> channelTableau = new ArrayList<>();

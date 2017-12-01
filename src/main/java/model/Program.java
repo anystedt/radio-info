@@ -104,4 +104,6 @@ public class Program {
      * @return the end time of the program.
      */
     public LocalDateTime getEnd(){ return end; }
+
+    public String toString(){ return title; }
 }

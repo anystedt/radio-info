@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -35,10 +34,10 @@ public class RadioView {
     private JPanel channelList;
     private ChannelInfo channelInfo;
 
-    public RadioView(){
+    public RadioView() {
         frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(650,80));
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(650, 350));
         frame.setPreferredSize(new Dimension(700, 500));
         frame.setLayout(new BorderLayout());
 
@@ -52,9 +51,9 @@ public class RadioView {
         frame.pack();
     }
 
-    public JScrollPane createChannelList(){
+    public JScrollPane createChannelList() {
         channelList = new JPanel();
-        channelList.setLayout(new GridLayout(0,1, 2, 5));
+        channelList.setLayout(new GridLayout(0, 1, 2, 5));
 
         JScrollPane scrollArea = new JScrollPane(channelList);
         scrollArea.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
@@ -63,50 +62,80 @@ public class RadioView {
         return scrollArea;
     }
 
-    public JLabel createChannelLabel(String name, String imageUrl){
+    public JLabel createChannelLabel(String name, String imageUrl) {
         JLabel label = new JLabel(name);
-        label.setIcon(getImageFromUrl(imageUrl));
+        label.setIcon(getImageFromUrl(imageUrl, 40));
 
         return label;
     }
 
-    public void setChannels(List<JLabel> channelLabels){
+    public void setChannels(List<JLabel> channelLabels) {
         channelList.removeAll();
 
-        for(JLabel label: channelLabels){
+        for (JLabel label : channelLabels) {
             channelList.add(label);
         }
 
         frame.setVisible(true);
     }
 
-    private ImageIcon getImageFromUrl(String imageUrl){
+    private ImageIcon getImageFromUrl(String imageUrl, int size) {
         ImageIcon icon = null;
 
         try {
-            URL url = new URL(imageUrl);
-            Image img = ImageIO.read(url);
-            img = img.getScaledInstance(40,40,Image.SCALE_DEFAULT);
-            icon = new ImageIcon(img);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            if (imageUrl != null) {
+                URL url = new URL(imageUrl);
+                Image img = ImageIO.read(url);
+                img = img.getScaledInstance(size, size, Image.SCALE_DEFAULT);
+                icon = new ImageIcon(img);
+            } else {
+
+               /* BufferedImage image=ImageIO.read(getClass().getClassLoader().getResource("default_image.jpg"));
+                System.out.println(image);  */
+
+                ;
+
+
+                System.out.println(getClass().getResource("/resources/images/default_image.jpg"));
+                /*img = img.getScaledInstance(size, size, Image.SCALE_DEFAULT);
+                icon = new ImageIcon(img);    */
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return icon;
     }
 
-    public void setUpdateListener(ActionListener actionListener){
+    public void setUpdateListener(ActionListener actionListener) {
         updateButton.addActionListener(actionListener);
     }
 
-    public void setChannelLabelListener(JLabel label, List<Object[]> listOfPrograms){
-        label.addMouseListener(new MouseAdapter(){
-            public void mouseClicked(MouseEvent e){
+    public void setViewListener(JLabel label, List<Object[]> listOfPrograms, MouseAdapter programListener) {
+        label.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 channelInfo.changeHeaderContent(label);
-                channelInfo.addTable(listOfPrograms);
+                channelInfo.addTable(listOfPrograms, programListener);
                 frame.validate();
             }
         });
     }
+
+    public void showProgramInfo(String title, String subtitle, String imageUrl, String description) {
+        channelInfo.clearProgram();
+        ImageIcon image = getImageFromUrl(imageUrl, 100);
+        channelInfo.fillProgramInfo(title, subtitle, image, description);
+    }
+
+    public void showErrorMessage(Exception e) {
+        JOptionPane.showMessageDialog(frame,
+                "Could not start program because of a\n" + e.getClass().getName(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        System.exit(0);
+    }
 }
+
+
+//TODO Fixa så att om ett program inte har en bild visas en default?
+//TODO UNDANTAG - Om en bild inte går att ladda?
+//TODO TESTER

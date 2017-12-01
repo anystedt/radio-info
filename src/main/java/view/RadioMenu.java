@@ -1,7 +1,18 @@
+/**
+ * Created on 28/11/17
+ * File: RadioMenu.java
+ *
+ * @author Anna Nystedt, id14ant
+ */
+
+/**
+ * Class representing the menu of the program. Creates the menu and
+ * initializes menu items with appropriate actions.
+ */
+
 package view;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -29,7 +40,7 @@ public class RadioMenu extends JMenuBar{
                 e.printStackTrace();
             }
         });
+
         exitItem.addActionListener((ActionEvent event) -> System.exit(0));
     }
-
 }

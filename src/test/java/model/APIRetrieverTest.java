@@ -15,6 +15,10 @@ package model;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import static org.junit.Assert.*;
@@ -31,7 +35,7 @@ public class APIRetrieverTest {
     }
 
     @Test(expected =  MalformedURLException.class)
-    public void testMalformedURLException(){
+    public void testMalformedURLException() throws ParserConfigurationException, SAXException, IOException {
         apiRetriever.parseXML("URL", "tagName");
     }
 
