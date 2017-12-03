@@ -9,7 +9,7 @@ To run the program use
 
         mvn compile
 
-in the source root of the project. <br>
+in the source root of the project. <br><br>
 
 Then run the program with
 
