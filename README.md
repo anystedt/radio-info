@@ -2,15 +2,14 @@ This is a program developed during the course Application Development in Java. T
 
 This information is presented to the user through an interface, where the user can choose among the retrieved channels, as seen below.<br><br>
 
-<img src="src/main/java/resources/images/Program.jpg" width="200">
+<img src="src/main/java/resources/images/Program.jpg" width="500">
 <br>
 
 To run the program use
 
         mvn compile
 
-in the source root of the project. 
-
+in the source root of the project. <br>
 
 Then run the program with
 
