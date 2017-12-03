@@ -6,12 +6,9 @@ This information is presented to the user through an interface, where the user c
 
 To run the program use
 
-´´´
-mvn compile
-´´´
+        mvn compile
 
 in the source root of the project. Then run the program with
 
-´´´
-java -jar target/RadioInfo-1.0-SNAPSHOT-jar-with-dependencies.jar
-´´´
+
+        java -jar target/RadioInfo-1.0-SNAPSHOT-jar-with-dependencies.jar
