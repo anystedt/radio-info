@@ -94,8 +94,8 @@ public class APIRetriever {
      * Uses a inputstream and a tag name to retrieve all the tags
      * with the given name. Returns a node list containing all the
      * extracted nodes.
-     * @param input
-     * @param tagName
+     * @param input the inputstream to parse
+     * @param tagName the tag name to extract
      * @return a node list containing the extracted nodes.
      * @throws IOException if the connection fails
      * @throws SAXException if the XML parser fails

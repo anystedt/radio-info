@@ -137,6 +137,22 @@ public class APIRetrieverTest {
                         ("src/test/java/model/assets/channels.xml"),
                 "channel");
         assertEquals(apiRetriever.setChannelContent(xml).size(), 10);
+
+    }
+
+    /**
+     * Tests that the list created contains objects of the type
+     * Channel.
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    @Test
+    public void shouldReturnListOfChannels() throws IOException, ParserConfigurationException, SAXException {
+        NodeList xml = apiRetriever.parseXML(new FileInputStream
+                        ("src/test/java/model/assets/channels.xml"),
+                "channel");
+        assertEquals(apiRetriever.setChannelContent(xml).get(0).getClass(), new Channel().getClass());
     }
 
     /**
