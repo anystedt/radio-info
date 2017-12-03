@@ -2,13 +2,17 @@ This is a program developed during the course Application Development in Java. T
 
 This information is presented to the user through an interface, where the user can choose among the retrieved channels, as seen below.<br><br>
 
-![Program image|small](src/main/java/resources/images/Program.jpg?raw=true )<br>
+<img src="src/main/java/resources/images/Program.jpg" width="200">
+<br>
 
 To run the program use
 
         mvn compile
 
-in the source root of the project. Then run the program with
+in the source root of the project. 
+
+
+Then run the program with
 
 
         java -jar target/RadioInfo-1.0-SNAPSHOT-jar-with-dependencies.jar
