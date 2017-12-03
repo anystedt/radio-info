@@ -39,33 +39,47 @@ public class RadioController {
 
     /**
      * Constructor for the controller. Initializes the model and the
-     * view the controller will use.
+     * view the controller will use. Starts a timer that will update
+     * the information once an hour and adds a listener to the
+     * update button.
      * @param view the view
      * @param model the model
      */
     public RadioController(RadioView view, APIRetriever model){
         this.view = view;
         this.model = model;
-        updateView();
+
+        //Starts a timer that will update content once an hour.
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!isRetrievingChannels) {
+                    updateView();
+                }
+            }
+        }, 0, 3600 * 1000);
+
+        //Gives the update button a listener that will update content
+        // when pressed.
+        view.setUpdateListener(e -> {
+            if (!isRetrievingChannels) {
+                updateView();
+            }
+        });
     }
 
     /**
-     * Updates the view once an hour (start counting from when the
-     * program starts) or when the user uses the gui to update.
+     * Updates the view when executed.
      */
     private void updateView() {
-
-        /**
-         * Inner class that handles the additional thread that collects
-         * information from the SR-api and then forwards the result
-         * to the view.
-         */
-        class worker extends SwingWorker<List<JLabel>, Void> {
+        //Creates a new thread that will update content.
+        new SwingWorker<List<JLabel>, Void>(){
             /**
              * Retrieves the channel information from the model and
              * makes the data readable for the view. Prepares the
              * labels that will be used for presenting the channels
-             * for the user, to prevent the GUI to froze.
+             * for the user, to prevent the GUI to freeze.
              *
              * @return a list of labels that will be presented by the
              * view.
@@ -74,7 +88,6 @@ public class RadioController {
             protected List<JLabel> doInBackground() {
 
                 isRetrievingChannels = true;
-
                 try {
                     List<Channel> listOfChannels = model.getChannels();
 
@@ -84,22 +97,16 @@ public class RadioController {
                         JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
                         List<Object[]> tableObjects = getTableau(channel);
 
-                        view.setViewListener(channelLabel, tableObjects, programListener);
+                        view.setViewListener(channelLabel, tableObjects, createProgramListener());
                         channelLabels.add(channelLabel);
                     }
 
-                    isRetrievingChannels = false;
-
                     return channelLabels;
 
-                } catch (ParserConfigurationException e) {
+                } catch (ParserConfigurationException | SAXException | IOException e) {
                     view.showErrorMessage(e);
-                } catch (SAXException e) {
-                    view.showErrorMessage(e);
-                } catch (IOException e) {
-                    view.showErrorMessage(e);
+                    return null;
                 }
-                return null;
             }
 
             /**
@@ -108,6 +115,7 @@ public class RadioController {
             @Override
             protected void done() {
                 try {
+                    isRetrievingChannels = false;
                     List<JLabel> channelLabels = get();
 
                     if(channelLabels != null){
@@ -118,39 +126,27 @@ public class RadioController {
                 }
             }
 
-            private MouseAdapter programListener = new MouseAdapter(){
-                public void mousePressed(MouseEvent e) {
-                    JTable target = (JTable) e.getSource();
-                    int row = target.getSelectedRow();
-                    Program clickedProgram = (Program) target.getValueAt(row, 0);
+        }.execute();
+    }
 
-                    view.showProgramInfo(clickedProgram.getTitle(),
-                            clickedProgram.getSubtitle(),
-                            clickedProgram.getImageUrl(),
-                            clickedProgram.getDescription());
-                }
-            };
-        }
+    /**
+     * Returns a listener that is used for retrieving the information
+     * about a program when that program is clicked in the tableau.
+     * @return the listener.
+     */
+    private MouseAdapter createProgramListener(){
+        return new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                JTable target = (JTable) e.getSource();
+                int row = target.getSelectedRow();
+                Program clickedProgram = (Program) target.getValueAt(row, 0);
 
-        //Starts a timer that will execute the methods of the inner
-        //class once an hour.
-        Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (!isRetrievingChannels) {
-                    new worker().execute();
-                }
+                view.showProgramInfo(clickedProgram.getTitle(),
+                        clickedProgram.getSubtitle(),
+                        clickedProgram.getImageUrl(),
+                        clickedProgram.getDescription());
             }
-        }, 0, 3600 * 1000);
-
-        //Gives the update button a listener that will execute the
-        //methods of the inner class when pressed.
-        view.setUpdateListener(e -> {
-            if (!isRetrievingChannels) {
-                new worker().execute();
-            }
-        });
+        };
     }
 
     /**

@@ -68,10 +68,21 @@ public class Tableau extends JPanel {
                 return c;
             }
 
+            /**
+             * Makes the table uneditable
+             * @param row the row of the table
+             * @param column the column of the table
+             * @return false since all rows/columns should be
+             * uneditable.
+             */
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
 
+            /**
+             * Styles the given component.
+             * @param c
+             */
             private void styleTable(Component c){
                 //Color
                 c.setForeground(getForeground());
@@ -89,6 +100,13 @@ public class Tableau extends JPanel {
                 getColumnModel().getColumn(COL_END).setPreferredWidth(80);
             }
 
+            /**
+             * Colors the programs depending on if the have been sent,
+             * is sending or is about to send later.
+             * @param c the component that should be styled.
+             * @param start the start time of the program.
+             * @param end the end time of the program.
+             */
             private void colorProgram(Component c, LocalDateTime start, LocalDateTime end){
                 //Change the color if the program has been sent
                 if (end.isBefore(LocalDateTime.now())){

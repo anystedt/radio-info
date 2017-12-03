@@ -25,6 +25,12 @@ public class ChannelInfo extends JPanel {
     private JPanel programPanel;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Constructor instantiating all the necessary parts for the
+     * information displayed about the channel.
+     * @param updateButton the button that will be displayed in the
+     *                     view.
+     */
     public ChannelInfo(JButton updateButton){
         setLayout(new BorderLayout());
         add(createHeader(), BorderLayout.PAGE_START);
@@ -34,6 +40,10 @@ public class ChannelInfo extends JPanel {
         header.add(createUpdateButton(updateButton), gbc);
     }
 
+    /**
+     * Creates the header showing which channel is selected.
+     * @return the panel constitutes the header.
+     */
     private JPanel createHeader(){
         header = new JPanel();
         header.setLayout(new GridBagLayout());
@@ -46,6 +56,11 @@ public class ChannelInfo extends JPanel {
         return header;
     }
 
+    /**
+     * Creates the panel that will store the button used for update.
+     * @param updateButton the update button
+     * @return the panel containing the button.
+     */
     private JPanel createUpdateButton(JButton updateButton){
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.white);
@@ -55,6 +70,12 @@ public class ChannelInfo extends JPanel {
         return buttonPanel;
     }
 
+    /**
+     * Changes the header content displaying the image and name
+     * of the given channel label.
+     * @param channelLabel the channel label that should be displayed
+     *                     in the header.
+     */
     public void changeHeaderContent(JLabel channelLabel){
         removeHeaderContent();
 
@@ -66,6 +87,9 @@ public class ChannelInfo extends JPanel {
         header.add(label, gbc);
     }
 
+    /**
+     * Removes the label in the header.
+     */
     private void removeHeaderContent(){
         Component[] componentList = header.getComponents();
 
@@ -79,12 +103,23 @@ public class ChannelInfo extends JPanel {
         header.repaint();
     }
 
+    /**
+     * Sets the constraints for the GridBagConstraints variable.
+     * @param gridx the value of gridx
+     * @param weightx the value of weightx
+     * @param fill the value of fill.
+     */
     private void setGridBagConstraints(int gridx, int weightx, int fill){
         gbc.gridx = gridx;
         gbc.weightx = weightx;
         gbc.fill = fill;
     }
 
+    /**
+     * Resizes the image to a another size.
+     * @param icon the icon containing the image
+     * @return the resized icon
+     */
     private ImageIcon resizeChannelImage(ImageIcon icon){
         Image channelImage = icon.getImage();
         Image newImage = channelImage.getScaledInstance(80, 80,  java.awt.Image.SCALE_SMOOTH);
@@ -92,12 +127,26 @@ public class ChannelInfo extends JPanel {
         return new ImageIcon(newImage);
     }
 
+    /**
+     * Adds the table containing the tableau to the view. Adds all the
+     * programs to the tableau if there is any, otherwise informs the
+     * user about the lack of programs.
+     * @param listOfPrograms a list containing all the programs.
+     * @param programListener a listener to add to the tableau for
+     *                        displaying detailed information about
+     *                        programs.
+     */
     public void addTable(List<Object[]> listOfPrograms, MouseAdapter programListener){
+        //Removes the old tableau if there is one and add a new one
+        // connected to the listener.
         removeTable();
-
         Tableau tableau = new Tableau();
         tableau.addRowListener(programListener);
 
+        //If the given list contains any programs these are added to
+        // the tableau, otherwise a message will be displayed in the
+        // view telling the user the channel does not send any
+        // program this day.
         if(listOfPrograms.size() != 0){
             JScrollPane scrollArea = new JScrollPane(tableau);
             scrollArea.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
@@ -106,8 +155,6 @@ public class ChannelInfo extends JPanel {
                 add(scrollArea);
             }
         } else {
-
-
             JPanel panel = new JPanel();
             panel.add(new JLabel("Pause of transmission"));
             JScrollPane scroll = new JScrollPane(panel);
@@ -115,6 +162,10 @@ public class ChannelInfo extends JPanel {
         }
     }
 
+    /**
+     * Removes the table or other scrollable content in the
+     * information about the channel.
+     */
     private void removeTable(){
        for(Component c : getComponents()){
             if(c instanceof JScrollPane){
@@ -123,6 +174,11 @@ public class ChannelInfo extends JPanel {
         }
     }
 
+    /**
+     * Creates the panel intended to show the detailed information
+     * about a program when a program is clicked in the tableau.
+     * @return the panel intended to store the information.
+     */
     private JPanel createProgramInfo(){
         programPanel = new JPanel();
         programPanel.setBackground(new Color(238,238,238));
@@ -132,20 +188,36 @@ public class ChannelInfo extends JPanel {
         return programPanel;
     }
 
+    /**
+     * Clears the program information displayed in the panel for
+     * detailed information at the moment.
+     */
     public void clearProgram(){
         programPanel.removeAll();
         programPanel.revalidate();
         programPanel.repaint();
     }
 
+    /**
+     * Fills the area reserved for the program information with the
+     * given information.
+     * @param title the title of the program.
+     * @param subtitle the subtitle of the program
+     * @param image the image of the program
+     * @param description the description of the program.
+     */
     public void fillProgramInfo(String title, String subtitle, ImageIcon image, String description) {
         String header;
 
+        //If the given program has a image it will be displayed in
+        // the view
         if(image != null){
             setGridBagConstraints(0,0,0);
             programPanel.add(new JLabel(image));
         }
 
+        //Creates a panel that will store the title, subtitle and the
+        // description about the program
         JPanel infoPanel = new JPanel();
         setGridBagConstraints(1,2,2);
         programPanel.add(infoPanel, gbc);
@@ -174,5 +246,7 @@ public class ChannelInfo extends JPanel {
         descriptionArea.setFont(titleArea.getFont().deriveFont(12f));
 
         infoPanel.add(descriptionArea, BorderLayout.CENTER);
+
+        programPanel.revalidate();
     }
 }

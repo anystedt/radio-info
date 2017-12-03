@@ -23,6 +23,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +40,36 @@ public class APIRetriever {
      * Returns a list containing the channels. For each channel the
      * information and the tableau for that channel has been extracted.
      * @return a list containing the channels.
+     * @throws IOException if the connection fails
+     * @throws SAXException if the XML parser fails
+     * @throws ParserConfigurationException if configuration error occurs
      */
-    public List<Channel> getChannels() throws ParserConfigurationException, SAXException, IOException {
+    public List<Channel> getChannels() throws
+            ParserConfigurationException, SAXException, IOException {
+        URL url = new URL("http://api.sr.se/api/v2/channels/?pagination=false");
+        NodeList xml = parseXML(url.openStream(), "channel");
+        listOfChannels = setChannelContent(xml);
 
-        NodeList xml = parseXML("http://api.sr.se/api/v2/channels/?pagination=false", "channel");
-        listOfChannels = new ArrayList<>();
+        return listOfChannels;
+    }
 
-        //Create a timeholder that holds the current time and the
-        //limits for the tableau.
+    /**
+     * Returns a list containing channels holding information about
+     * the channels retrieved from a given node list
+     * @param xml the node list containing information about the
+     *            channels
+     * @return a list of channels
+     * @throws IOException if the connection fails
+     * @throws SAXException if the XML parser fails
+     * @throws ParserConfigurationException if configuration error occurs
+     */
+    public List<Channel> setChannelContent(NodeList xml)
+            throws IOException, SAXException,
+            ParserConfigurationException {
+        //Creates a timeholder that keeps track of the limits for
+        // the tableau.
         TimeHolder timeHolder = new TimeHolder();
+        listOfChannels = new ArrayList<>();
 
         //Goes through the list of nodes and creates all channels
         //and the tableau for each channel.
@@ -64,36 +87,30 @@ public class APIRetriever {
                 listOfChannels.add(channel);
             }
         }
-
         return listOfChannels;
     }
 
     /**
-     * Uses a url and a tag name to retrieve all the tags with the
-     * given name. Returns a node list containing all the extracted
-     * nodes.
-     * @param stringUrl the url to the api.
-     * @param tagName the name of the tag that should be retrieved.
-     * @return a node list containing the extracted nodes.
-     */
-    /**
-     *
-     * @param stringUrl
+     * Uses a inputstream and a tag name to retrieve all the tags
+     * with the given name. Returns a node list containing all the
+     * extracted nodes.
+     * @param input
      * @param tagName
-     * @return
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws SAXException
+     * @return a node list containing the extracted nodes.
+     * @throws IOException if the connection fails
+     * @throws SAXException if the XML parser fails
+     * @throws ParserConfigurationException if configuration error occurs
      */
-    public NodeList parseXML(String stringUrl, String tagName) throws IOException, ParserConfigurationException, SAXException {
-        URL url = new URL(stringUrl);
+    public NodeList parseXML(InputStream input, String tagName)
+            throws IOException, ParserConfigurationException,
+            SAXException {
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(url.openStream());
+        Document doc = db.parse(input);
         doc.getDocumentElement().normalize();
-        NodeList xml = doc.getElementsByTagName(tagName);
 
-        return xml;
+        return doc.getElementsByTagName(tagName);
     }
 
     /**
@@ -104,9 +121,8 @@ public class APIRetriever {
      * @return the content of the tag if it exists, otherwise return
      * null.
      */
-    public String getTag(Element element, String tagName){
+    private String getTag(Element element, String tagName){
         NodeList nl = element.getElementsByTagName(tagName);
-
         if(nl.getLength() != 0){
             return nl.item(0).getTextContent();
         } else{
@@ -118,15 +134,20 @@ public class APIRetriever {
      * Gets the programs for a specific channel.
      * @param channelId the id of the channel
      * @param timeHolder the timeholder keeping track of the limits
-     *                   of the tableau
-     * @return the list of programs.
+     *                   of the tableau.
+     * @return the list of programs
+     * @throws IOException if the connection fails
+     * @throws SAXException if the XML parser fails
+     * @throws ParserConfigurationException if configuration error occurs
      */
-    public List<Program> parseTableau(String channelId, TimeHolder timeHolder) throws ParserConfigurationException, SAXException, IOException {
-        NodeList xmlPrograms = parseXML(getTableauUrl(channelId, timeHolder),
-                "scheduledepisode");
+    private List<Program> parseTableau(String channelId, TimeHolder timeHolder)
+            throws ParserConfigurationException, SAXException,
+            IOException {
+        NodeList xmlPrograms = parseXML(getTableauUrl(channelId,
+                timeHolder).openStream(), "scheduledepisode");
         List<Program> channelTableau = new ArrayList<>();
 
-        //Goes through all the programs in the channels tableau
+        //Goes through all the programs in the channel's tableau
         for(int i = 0; i < xmlPrograms.getLength(); i++){
             Node node = xmlPrograms.item(i);
 
@@ -151,13 +172,15 @@ public class APIRetriever {
      * @param channelId the id of the channel.
      * @param timeHolder the timeholder keeping track of the limits
      *                   for the tableau.
-     * @return a string containing the url.
+     * @return a url.
+     * @throws MalformedURLException if the url fails.
      */
-    public String getTableauUrl(String channelId, TimeHolder timeHolder){
-        return "http://api.sr.se/v2/scheduledepisodes?channelid="
+    private URL getTableauUrl(String channelId, TimeHolder timeHolder) throws MalformedURLException {
+
+        return new URL("http://api.sr.se/v2/scheduledepisodes?channelid="
                 + channelId + "&fromdate=" + timeHolder.getStartDateString()
                 + "&todate=" + timeHolder.getEndDateString() +
-                "&pagination=false";
+                "&pagination=false");
     }
 
     /**
@@ -178,7 +201,7 @@ public class APIRetriever {
      * @param eProgram the program element.
      * @return the program containing all essential information.
      */
-    public Program getProgramInfo(Element eProgram){
+    private Program getProgramInfo(Element eProgram){
         Program program = new Program();
 
         program.setTitle(getTag(eProgram, "title"));

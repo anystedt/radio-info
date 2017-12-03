@@ -16,16 +16,15 @@ import java.time.LocalDateTime;
 
 public class TimeHolder {
 
-    LocalDateTime currentTime;
-    LocalDateTime tableauStart;
-    LocalDateTime tableauEnd;
+    private LocalDateTime tableauStart;
+    private LocalDateTime tableauEnd;
 
     /**
      * Constructor that sets the current time, the start time and the
      * end time according to the specification of the tableau.
      */
     public TimeHolder(){
-        currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
         tableauStart = currentTime.minusHours(12);
         tableauEnd = currentTime.plusHours(12);
     }
