@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -82,7 +83,7 @@ public class APIRetriever {
 
                 channel.setId(parseInt(eChannel.getAttribute("id")));
                 channel.setName(eChannel.getAttribute("name"));
-                channel.setImageUrl(getTag(eChannel, "image"));
+                channel.setImage(getTag(eChannel, "image"));
                 channel.setTableau(parseTableau(channel.getId().toString(), timeHolder));
                 listOfChannels.add(channel);
             }
@@ -207,7 +208,7 @@ public class APIRetriever {
         program.setTitle(getTag(eProgram, "title"));
         program.setSubtitle(getTag(eProgram, "subtitle"));
         program.setDescription(getTag(eProgram, "description"));
-        program.setImageUrl(getTag(eProgram, "imageurl"));
+        program.setImage(getTag(eProgram, "imageurl"));
         program.setStart(getTag(eProgram, "starttimeutc"));
         program.setEnd(getTag(eProgram, "endtimeutc"));
 

@@ -15,14 +15,11 @@
 
 package view;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
@@ -45,7 +42,7 @@ public class RadioView {
         frame.setPreferredSize(new Dimension(700, 500));
         frame.setLayout(new BorderLayout());
 
-        frame.setJMenuBar(new RadioMenu());
+        frame.setJMenuBar(new RadioMenu(frame));
         frame.add(createChannelList(), BorderLayout.LINE_START);
         
         updateButton = new JButton("Update");
@@ -77,12 +74,12 @@ public class RadioView {
      * Creates a label containing the channel image and the channel
      * name.
      * @param title the title
-     * @param imageUrl the url string to the image
+     * @param image the image
      * @return a label containing the title and the image
      */
-    public JLabel createChannelLabel(String title, String imageUrl) {
+    public JLabel createChannelLabel(String title, ImageIcon image) {
         JLabel label = new JLabel(title);
-        label.setIcon(getImageFromUrl(imageUrl, 40));
+        label.setIcon(image);
 
         return label;
     }
@@ -99,42 +96,6 @@ public class RadioView {
             channelList.add(label);
         }
         frame.revalidate();
-    }
-
-    /**
-     * Retrieves a image using the given url, scaling it to the given
-     * size. If the url is null a default image is used. If the image
-     * cannot be loaded a error message will appear in the view. 
-     * @param imageUrl the url string to the image
-     * @param size the size the image will be scaled to.
-     * @return an icon containing the given image.
-     */
-    private ImageIcon getImageFromUrl(String imageUrl, int size) {
-        ImageIcon icon = null;
-        URL url;
-
-        try {
-            if (imageUrl != null) {
-                url = new URL(imageUrl);
-                Image img = ImageIO.read(url);
-                img = img.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-                icon = new ImageIcon(img);
-            } else {
-
-               url = getClass().getResource("/images/default-placeholder.png");
-
-               Image img = ImageIO.read(url);
-               img = img.getScaledInstance(size, size, Image.SCALE_DEFAULT);
-               icon = new ImageIcon(img);
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame,
-                    "Could not load image " + imageUrl,
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-            return icon;
-        }
-
-        return icon;
     }
 
     /**
@@ -170,14 +131,25 @@ public class RadioView {
      * displaying this information.
      * @param title the title of the program
      * @param subtitle the subtitle of the program
-     * @param imageUrl the image url of the program
+     * @param image the image of the program
      * @param description the description of the program
      */
-    public void showProgramInfo(String title, String subtitle, String imageUrl, String description) {
+    public void showProgramInfo(String title, String subtitle, ImageIcon image, String description) {
         channelInfo.clearProgram();
-        ImageIcon image = getImageFromUrl(imageUrl, 100);
         channelInfo.fillProgramInfo(title, subtitle, image, description);
     }
+
+    /**
+     * Shows an error message when a image could not be loaded from
+     * url.
+     * @param imageUrl
+     */
+    public void showImageError(String imageUrl){
+        JOptionPane.showMessageDialog(null,
+                "Could not load image " + imageUrl,
+                "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+
 
     /**
      * Displays an errormessage explaining why the program could not

@@ -50,15 +50,15 @@ public class Channel {
 
     /**
      * Sets the image url.
-     * @param imageUrl the image url of the channel.
+     * @param image the image url of the channel.
      */
-    public void setImageUrl(String imageUrl){ this.imageUrl = imageUrl; }
+    public void setImage(String image){ this.imageUrl = image; }
 
     /**
      * Returns the image url
      * @return the image url of the channel
      */
-    public String getImageUrl(){ return imageUrl; }
+    public String getImage(){ return imageUrl; }
 
     /**
      * Sets the tableau.

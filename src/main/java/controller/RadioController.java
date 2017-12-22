@@ -20,11 +20,14 @@ import model.Program;
 import org.xml.sax.SAXException;
 import view.RadioView;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
@@ -75,6 +78,7 @@ public class RadioController {
     private void updateView() {
         //Creates a new thread that will update content.
         new SwingWorker<List<JLabel>, Void>(){
+
             /**
              * Retrieves the channel information from the model and
              * makes the data readable for the view. Prepares the
@@ -94,17 +98,21 @@ public class RadioController {
                     List<JLabel> channelLabels = new ArrayList<>();
 
                     for (Channel channel : listOfChannels) {
-                        JLabel channelLabel = view.createChannelLabel(channel.getName(), channel.getImageUrl());
                         List<Object[]> tableObjects = getTableau(channel);
 
-                        view.setViewListener(channelLabel, tableObjects, createProgramListener());
-                        channelLabels.add(channelLabel);
+                        ImageIcon image = getImageFromUrl(channel.getImage(), 40);
+
+                        SwingUtilities.invokeLater(() -> {
+                            JLabel channelLabel = view.createChannelLabel(channel.getName(), image);
+                            view.setViewListener(channelLabel, tableObjects, createProgramListener());
+                            channelLabels.add(channelLabel);
+                        });
                     }
 
                     return channelLabels;
 
                 } catch (ParserConfigurationException | SAXException | IOException e) {
-                    view.showErrorMessage(e);
+                    SwingUtilities.invokeLater(() -> view.showErrorMessage(e));
                     return null;
                 }
             }
@@ -141,9 +149,11 @@ public class RadioController {
                 int row = target.getSelectedRow();
                 Program clickedProgram = (Program) target.getValueAt(row, 0);
 
+                ImageIcon programImage = getImageFromUrl(clickedProgram.getImage(), 100);
+
                 view.showProgramInfo(clickedProgram.getTitle(),
                         clickedProgram.getSubtitle(),
-                        clickedProgram.getImageUrl(),
+                        programImage,
                         clickedProgram.getDescription());
             }
         };
@@ -167,5 +177,40 @@ public class RadioController {
         }
 
         return tableObjects;
+    }
+
+    /**
+     * Retrieves a image using the given url, scaling it to the given
+     * size. If the url is null a default image is used. If the image
+     * cannot be loaded a error message will appear in the view.
+     * @param imageUrl the url string to the image
+     * @param size the size the image will be scaled to.
+     * @return an icon containing the given image.
+     */
+    private ImageIcon getImageFromUrl(String imageUrl, int size) {
+        ImageIcon icon = null;
+        URL url;
+
+        try {
+            if (imageUrl != null) {
+                url = new URL(imageUrl);
+                Image img = ImageIO.read(url);
+                img = img.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(img);
+            } else {
+
+                url = getClass().getResource("/images/default-placeholder.png");
+
+                Image img = ImageIO.read(url);
+                img = img.getScaledInstance(size, size, Image.SCALE_DEFAULT);
+                icon = new ImageIcon(img);
+            }
+        } catch (IOException e) {
+            view.showImageError(imageUrl);
+
+            return icon;
+        }
+
+        return icon;
     }
 }

@@ -65,15 +65,15 @@ public class Program {
 
     /**
      * Sets the image url.
-     * @param imageUrl the image url of the program.
+     * @param image the image url of the program.
      */
-    public void setImageUrl(String imageUrl){ this.imageUrl = imageUrl; }
+    public void setImage(String image){ this.imageUrl = image; }
 
     /**
      *  Returns the image url.
      * @return the image url of the program.
      */
-    public String getImageUrl(){ return imageUrl; }
+    public String getImage(){ return imageUrl; }
 
     /**
      * Sets the start time.
